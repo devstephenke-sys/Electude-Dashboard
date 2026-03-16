@@ -2,6 +2,32 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+def check_password():
+    """Returns `True` if the user entered the correct password."""
+
+    def password_entered():
+        """Checks whether a password entered by the user is correct."""
+        if st.session_state["password"] == st.secrets["passwords"]["password"]:
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]  # Don't store the password.
+        else:
+            st.session_state["password_correct"] = False
+
+    # Return `True` if the user has entered the correct password.
+    if st.session_state.get("password_correct", False):
+        return True
+
+    # Show input for password.
+    st.text_input(
+        "Password", type="password", on_change=password_entered, key="password"
+    )
+    if "password_correct" in st.session_state and not st.session_state.password_correct:
+        st.error("😕 Password incorrect")
+    return False
+
+if not check_password():
+    st.stop()
+
 st.set_page_config(
     page_title="Electude Africa Analytics",
     layout="wide"
